@@ -44,7 +44,7 @@ Kullanıcıların etkinlik oluşturabildiği, katılım sağlayabildiği ve yön
 ### Backend Çalıştırma
 
 ```bash
-cd demo1
+cd Eventify-backend
 ./mvnw spring-boot:run
 ```
 
@@ -57,7 +57,7 @@ Backend `http://localhost:8050` adresinde çalışır.
 ### Frontend Çalıştırma
 
 ```bash
-cd event-app
+cd Eventify-frontend
 npm install
 ng serve
 ```
@@ -122,7 +122,7 @@ http://localhost:8050/swagger-ui/index.html
 ## 🧪 Testler
 
 ```bash
-cd demo1
+cd Eventify-backend
 ./mvnw test
 ```
 
