@@ -19,7 +19,7 @@ public class UserRegisterRequestDto {
 
     @NotBlank(message = "Email alanı boş bırakılamaz")
     @Email(message = "Email formatı hatalı")
-    @Pattern(regexp = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$", message = "Geçerli ve güvenli bir email adresi giriniz")
+    @Pattern(regexp = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,6}$", message = "Geçerli ve güvenli bir email adresi giriniz")
     private String email;
 
     @NotBlank(message = "Telefon alanı boş bırakılamaz")
@@ -31,8 +31,8 @@ public class UserRegisterRequestDto {
     @Size(min = 6, max = 30, message = "Şifre en az 6, en fazla 30 karakter olmalıdır")
     // Şifre: En az 1 büyük harf, 1 küçük harf, 1 rakam ve 1 özel karakter içermeli
     @Pattern(
-            regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!.])(?=\\S+$).*$",
-            message = "Şifre boşluk içeremez ve en az bir rakam, bir büyük harf, bir küçük harf ve bir özel karakter içermelidir"
+            regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!.\\-_])(?=\\S+$).*$",
+            message = "Şifre boşluk içeremez ve en az bir rakam, bir büyük harf, bir küçük harf ve bir özel karakter (@#$%^&+=!.-_) içermelidir"
     )
     private String password;
 }
