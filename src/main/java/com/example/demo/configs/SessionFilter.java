@@ -29,7 +29,8 @@ public class SessionFilter implements Filter {
         response.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        response.setHeader("Access-Control-Allow-Headers", "*");
+        response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With");
+        response.setHeader("Access-Control-Max-Age", "3600");
 
         // 🔹 CORS preflight isteklerini auth'tan muaf tut
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
