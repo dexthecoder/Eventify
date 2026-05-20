@@ -7,7 +7,7 @@ Kullanıcıların etkinlik oluşturabildiği, katılım sağlayabildiği ve yön
 ## 🛠 Kullanılan Teknolojiler
 
 ### Backend
-- Java 21
+- **Java 21 LTS** (Java 25 ile çalışmaz, Lombok uyumsuzluğu)
 - Spring Boot 4.0.4
 - Spring Data JPA / Hibernate
 - H2 Database (dosya tabanlı)
