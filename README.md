@@ -35,7 +35,7 @@ Kullanıcıların etkinlik oluşturabildiği, katılım sağlayabildiği ve yön
 ## ⚙️ Kurulum & Çalıştırma
 
 ### Gereksinimler
-- Java 21+
+- **Java 21 LTS** (Java 25 ile çalışmaz, Lombok uyumsuzluğu)
 - Node.js 18+
 - Angular CLI (`npm install -g @angular/cli`)
 
