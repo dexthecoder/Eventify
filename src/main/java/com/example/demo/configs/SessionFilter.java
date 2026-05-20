@@ -39,7 +39,7 @@ public class SessionFilter implements Filter {
 
         String urlPath = request.getRequestURI();
 
-        // Mevcut projemizdeki serbest URL'ler
+        // serbest URL'ler
         String[] freeUrls = {"/user/register", "/user/login", "/h2-console", "/actuator", "/swagger-ui", "/v3/api-docs"};
 
         boolean isAuth = true;

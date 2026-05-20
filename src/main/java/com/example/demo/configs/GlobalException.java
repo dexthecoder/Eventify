@@ -40,7 +40,7 @@ public class GlobalException {
 
             Object rejectedValue = error.getRejectedValue();
 
-            // Eğer kullanıcı metin bekleyen yere DOSYA göndermişse
+            // Eğer kullanıcı metin bekleyen yere dosya göndermişse
             if (rejectedValue instanceof org.springframework.web.multipart.MultipartFile) {
                 errorMap.put("rejectedValue", "[Dosya İçeriği/File Object]");
                 errorMap.put("message", "Bu alan dosya yüklemesini desteklemez. Lütfen metin formatında geçerli bir veri giriniz.");

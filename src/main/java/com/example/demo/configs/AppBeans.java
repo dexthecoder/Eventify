@@ -14,7 +14,7 @@ public class AppBeans {
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration()
-                .setSkipNullEnabled(true) // İŞTE KRİTİK AYAR: Null olanları atla
+                .setSkipNullEnabled(true)
                 .setMatchingStrategy(MatchingStrategies.STRICT);
         return modelMapper;
     }
