@@ -1,0 +1,86 @@
+<div class="auth-wrapper">
+  <div class="auth-left">
+    <div class="brand">
+      <span class="brand-icon"><i class="bi bi-calendar-event-fill"></i></span>
+      <span class="brand-name">Eventify</span>
+    </div>
+    <div class="hero-text">
+      <h1>Etkinliklerin<br><span class="accent">dünyasına</span><br>hoş geldin.</h1>
+      <p>Konser, spor, atölye ve daha fazlası — hepsi bir arada.</p>
+    </div>
+    <div class="floating-cards">
+      <div class="fc fc-1"><i class="bi bi-music-note-beamed"></i> Müzik</div>
+      <div class="fc fc-2"><i class="bi bi-trophy"></i> Spor</div>
+      <div class="fc fc-3"><i class="bi bi-cpu"></i> Teknoloji</div>
+      <div class="fc fc-4"><i class="bi bi-brush"></i> Atölye</div>
+    </div>
+  </div>
+
+  <div class="auth-right">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h2>Giriş Yap</h2>
+        <p>Hesabına giriş yap ve etkinlikleri keşfet</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="field-group">
+          <label>Email veya Telefon</label>
+          <div class="input-wrap">
+            <i class="bi bi-person input-icon"></i>
+            <input
+              type="text"
+              formControlName="username"
+              class="form-control-custom"
+              [class.is-invalid]="username.invalid && username.touched"
+              placeholder="email@ornek.com veya 05XX...">
+          </div>
+          @if (username.invalid && username.touched) {
+            <span class="error-msg">
+              <i class="bi bi-exclamation-circle"></i> Geçerli bir kullanıcı adı girin
+            </span>
+          }
+        </div>
+
+        <div class="field-group">
+          <label>Şifre</label>
+          <div class="input-wrap">
+            <i class="bi bi-lock input-icon"></i>
+            <input
+              [type]="showPassword() ? 'text' : 'password'"
+              formControlName="password"
+              class="form-control-custom"
+              [class.is-invalid]="password.invalid && password.touched"
+              placeholder="••••••••">
+            <button type="button" class="toggle-pw" (click)="showPassword.set(!showPassword())">
+              <i class="bi" [class.bi-eye]="!showPassword()" [class.bi-eye-slash]="showPassword()"></i>
+            </button>
+          </div>
+          @if (password.invalid && password.touched) {
+            <span class="error-msg">
+              <i class="bi bi-exclamation-circle"></i> Şifre en az 6 karakter olmalı
+            </span>
+          }
+        </div>
+
+        @if (errorMsg()) {
+          <div class="server-error">
+            <i class="bi bi-x-circle-fill"></i> {{ errorMsg() }}
+          </div>
+        }
+
+        <button type="submit" class="btn-primary-custom" [disabled]="loading()">
+          @if (!loading()) {
+            <span>Giriş Yap</span>
+          } @else {
+            <span><i class="bi bi-arrow-repeat spin"></i> Giriş yapılıyor...</span>
+          }
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        Hesabın yok mu? <a routerLink="/register">Kayıt ol</a>
+      </div>
+    </div>
+  </div>
+</div>

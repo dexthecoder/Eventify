@@ -1,0 +1,201 @@
+<div class="create-page">
+  <div class="create-inner">
+
+    @if (pageLoading()) {
+      <div class="page-loading">
+        <div class="spinner"></div>
+      </div>
+    }
+
+    @if (!pageLoading()) {
+      <div class="page-header">
+        <button class="back-btn" routerLink="/my-events">
+          <i class="bi bi-arrow-left"></i>
+        </button>
+        <div>
+          <h1>Etkinliği Düzenle</h1>
+          <p>{{ currentEvent()?.title }}</p>
+        </div>
+      </div>
+
+      @if (isArchived) {
+        <div class="archived-warning">
+          <i class="bi bi-archive-fill"></i>
+          Bu etkinlik arşivlenmiş, düzenlenemez.
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="form-grid">
+
+          <div class="form-left">
+
+            <div class="section-card">
+              <h3 class="section-title">Etkinlik Görseli</h3>
+              <div class="current-image">
+                <img [src]="imagePreview() ?? currentImageUrl" alt="Mevcut görsel">
+                @if (!isArchived) {
+                  <div class="image-actions">
+                    <label class="btn-change-image" for="imageInput">
+                      <i class="bi bi-pencil"></i> Görseli Değiştir
+                    </label>
+                    @if (imagePreview()) {
+                      <button type="button" class="btn-remove-image" (click)="removeImage()">
+                        <i class="bi bi-x"></i> İptal
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+              <input id="imageInput" type="file" accept=".jpg,.jpeg,.png"
+                style="display:none" (change)="onFileChange($event)">
+            </div>
+
+            <div class="section-card">
+              <h3 class="section-title">Kategori</h3>
+              <div class="category-grid">
+                @for (cat of categories; track cat.value) {
+                  <button type="button" class="cat-option"
+                    [class.active]="f['category'].value === cat.value"
+                    [disabled]="isArchived"
+                    (click)="f['category'].setValue(cat.value)">
+                    {{ cat.label }}
+                  </button>
+                }
+              </div>
+            </div>
+
+            <div class="section-card">
+              <h3 class="section-title">Durum</h3>
+              <div class="status-options">
+                @for (opt of statusOptions; track opt.value) {
+                  <button type="button" class="status-option"
+                    [class.active]="f['status'].value === opt.value"
+                    [disabled]="isArchived || opt.value === 'ARCHIVED'"
+                    (click)="!isArchived && opt.value !== 'ARCHIVED' && f['status'].setValue(opt.value)">
+                    <i class="bi" [class]="opt.icon"></i>
+                    {{ opt.label }}
+                  </button>
+                }
+              </div>
+              <p class="status-hint">
+                <i class="bi bi-info-circle"></i>
+                Arşivlenmiş etkinlikler tekrar yayınlanamaz.
+              </p>
+            </div>
+
+          </div>
+
+          <div class="form-right">
+            <div class="section-card">
+              <h3 class="section-title">Etkinlik Bilgileri</h3>
+
+              <div class="field-group">
+                <label>Başlık <span class="required">*</span></label>
+                <input type="text" formControlName="title" class="form-control-custom"
+                  [class.is-invalid]="f['title'].invalid && f['title'].touched"
+                  placeholder="Etkinlik başlığı">
+                @if (f['title'].invalid && f['title'].touched) {
+                  @if (f['title'].errors?.['required']) {
+                    <span class="error-msg">
+                      <i class="bi bi-exclamation-circle"></i> Başlık zorunludur
+                    </span>
+                  } @else if (f['title'].errors?.['minlength']) {
+                    <span class="error-msg">
+                      <i class="bi bi-exclamation-circle"></i> Başlık en az 3 karakter olmalıdır
+                    </span>
+                  } @else if (f['title'].errors?.['maxlength']) {
+                    <span class="error-msg">
+                      <i class="bi bi-exclamation-circle"></i> Başlık en fazla 150 karakter olabilir
+                    </span>
+                  }
+                }
+              </div>
+
+              <div class="field-group">
+                <label>Açıklama <span class="required">*</span></label>
+                <textarea formControlName="description" class="form-control-custom textarea"
+                  [class.is-invalid]="f['description'].invalid && f['description'].touched"
+                  rows="5" maxlength="2000">
+                </textarea>
+                <div class="field-footer">
+                  @if (f['description'].invalid && f['description'].touched) {
+                    @if (f['description'].errors?.['required']) {
+                      <span class="error-msg">
+                        <i class="bi bi-exclamation-circle"></i> Açıklama zorunludur
+                      </span>
+                    } @else if (f['description'].errors?.['maxlength']) {
+                      <span class="error-msg">
+                        <i class="bi bi-exclamation-circle"></i> Açıklama en fazla 2000 karakter olabilir
+                      </span>
+                    }
+                  } @else {
+                    <span></span>
+                  }
+                  <span class="char-count">{{ f['description'].value?.length ?? 0 }}/2000</span>
+                </div>
+              </div>
+
+              <div class="field-row">
+                <div class="field-group">
+                  <label>Tarih & Saat <span class="required">*</span></label>
+                  <input type="datetime-local" formControlName="executionDate"
+                    class="form-control-custom"
+                    [class.is-invalid]="f['executionDate'].invalid && f['executionDate'].touched"
+                    [min]="minDate">
+                  @if (f['executionDate'].invalid && f['executionDate'].touched) {
+                    @if (f['executionDate'].errors?.['required']) {
+                      <span class="error-msg">
+                        <i class="bi bi-exclamation-circle"></i> Tarih zorunludur
+                      </span>
+                    } @else {
+                      <span class="error-msg">
+                        <i class="bi bi-exclamation-circle"></i> Etkinlik tarihi gelecekte olmalıdır
+                      </span>
+                    }
+                  }
+                </div>
+
+                <div class="field-group">
+                  <label>Konum <span class="required">*</span></label>
+                  <input type="text" formControlName="location" class="form-control-custom"
+                    [class.is-invalid]="f['location'].invalid && f['location'].touched"
+                    placeholder="Şehir, mekan adı (örn: İstanbul, Harbiye)">
+                  @if (f['location'].invalid && f['location'].touched) {
+                    @if (f['location'].errors?.['required']) {
+                      <span class="error-msg">
+                        <i class="bi bi-exclamation-circle"></i> Konum zorunludur
+                      </span>
+                    } @else if (f['location'].errors?.['maxlength']) {
+                      <span class="error-msg">
+                        <i class="bi bi-exclamation-circle"></i> Konum en fazla 250 karakter olabilir
+                      </span>
+                    }
+                  }
+                </div>
+              </div>
+
+            </div>
+
+            @if (errorMsg()) {
+              <div class="server-error">
+                <i class="bi bi-x-circle-fill"></i> {{ errorMsg() }}
+              </div>
+            }
+
+            @if (!isArchived) {
+              <button type="submit" class="btn-submit" [disabled]="loading()">
+                @if (loading()) {
+                  <i class="bi bi-arrow-repeat spin"></i> Güncelleniyor...
+                } @else {
+                  <i class="bi bi-check-circle"></i> Değişiklikleri Kaydet
+                }
+              </button>
+            }
+
+          </div>
+        </div>
+      </form>
+    }
+  </div>
+</div>

@@ -1,0 +1,153 @@
+<div class="auth-wrapper">
+  <div class="auth-left">
+    <div class="brand">
+      <span class="brand-icon"><i class="bi bi-calendar-event-fill"></i></span>
+      <span class="brand-name">Eventify</span>
+    </div>
+    <div class="hero-text">
+      <h1>Hemen<br><span class="accent">katıl</span>,<br>keşfetmeye başla.</h1>
+      <p>Binlerce etkinlik seni bekliyor. Ücretsiz hesap oluştur.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><span class="step-num">01</span><span>Hesabını oluştur</span></div>
+      <div class="step"><span class="step-num">02</span><span>Etkinlikleri keşfet</span></div>
+      <div class="step"><span class="step-num">03</span><span>Katıl ve beğen</span></div>
+    </div>
+  </div>
+
+  <div class="auth-right">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h2>Kayıt Ol</h2>
+        <p>Birkaç adımda hesabını oluştur</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="field-row">
+          <div class="field-group">
+            <label>Ad</label>
+            <input type="text" formControlName="name" class="form-control-custom"
+              [class.is-invalid]="f['name'].invalid && f['name'].touched" placeholder="Adın">
+            @if (f['name'].invalid && f['name'].touched) {
+              @if (f['name'].errors?.['required']) {
+                <span class="error-msg">
+                  <i class="bi bi-exclamation-circle"></i> Ad zorunludur
+                </span>
+              } @else {
+                <span class="error-msg">
+                  <i class="bi bi-exclamation-circle"></i> Ad 2-50 karakter arasında olmalıdır
+                </span>
+              }
+            }
+          </div>
+          <div class="field-group">
+            <label>Soyad</label>
+            <input type="text" formControlName="surname" class="form-control-custom"
+              [class.is-invalid]="f['surname'].invalid && f['surname'].touched" placeholder="Soyadın">
+            @if (f['surname'].invalid && f['surname'].touched) {
+              @if (f['surname'].errors?.['required']) {
+                <span class="error-msg">
+                  <i class="bi bi-exclamation-circle"></i> Soyad zorunludur
+                </span>
+              } @else {
+                <span class="error-msg">
+                  <i class="bi bi-exclamation-circle"></i> Soyad 2-50 karakter arasında olmalıdır
+                </span>
+              }
+            }
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label>Email</label>
+          <div class="input-wrap">
+            <i class="bi bi-envelope input-icon"></i>
+            <input type="email" formControlName="email" class="form-control-custom"
+              [class.is-invalid]="f['email'].invalid && f['email'].touched" placeholder="email@ornek.com">
+          </div>
+          @if (f['email'].invalid && f['email'].touched) {
+            @if (f['email'].errors?.['required']) {
+              <span class="error-msg">
+                <i class="bi bi-exclamation-circle"></i> Email zorunludur
+              </span>
+            } @else {
+              <span class="error-msg">
+                <i class="bi bi-exclamation-circle"></i> Geçerli bir email girin (örn: kullanici@gmail.com)
+              </span>
+            }
+          }
+        </div>
+
+        <div class="field-group">
+          <label>Telefon</label>
+          <div class="input-wrap">
+            <i class="bi bi-phone input-icon"></i>
+            <input type="text" formControlName="phone" class="form-control-custom"
+              [class.is-invalid]="f['phone'].invalid && f['phone'].touched" placeholder="05XXXXXXXXX">
+          </div>
+          @if (f['phone'].invalid && f['phone'].touched) {
+            @if (f['phone'].errors?.['required']) {
+              <span class="error-msg">
+                <i class="bi bi-exclamation-circle"></i> Telefon zorunludur
+              </span>
+            } @else {
+              <span class="error-msg">
+                <i class="bi bi-exclamation-circle"></i> 05XX ile başlayan 11 haneli numara giriniz (örn: 05321234567)
+              </span>
+            }
+          }
+        </div>
+
+        <div class="field-group">
+          <label>Şifre</label>
+          <div class="input-wrap">
+            <i class="bi bi-lock input-icon"></i>
+            <input [type]="showPassword() ? 'text' : 'password'" formControlName="password"
+              class="form-control-custom"
+              [class.is-invalid]="f['password'].invalid && f['password'].touched" placeholder="••••••••">
+            <button type="button" class="toggle-pw" (click)="showPassword.set(!showPassword())">
+              <i class="bi" [class.bi-eye]="!showPassword()" [class.bi-eye-slash]="showPassword()"></i>
+            </button>
+          </div>
+          @if (f['password'].invalid && f['password'].touched) {
+            @if (f['password'].errors?.['required']) {
+              <span class="error-msg">
+                <i class="bi bi-exclamation-circle"></i> Şifre zorunludur
+              </span>
+            } @else if (f['password'].errors?.['minlength']) {
+              <span class="error-msg">
+                <i class="bi bi-exclamation-circle"></i> Şifre en az 6 karakter olmalıdır
+              </span>
+            } @else if (f['password'].errors?.['maxlength']) {
+              <span class="error-msg">
+                <i class="bi bi-exclamation-circle"></i> Şifre en fazla 30 karakter olmalıdır
+              </span>
+            } @else if (f['password'].errors?.['pattern']) {
+              <span class="error-msg">
+                <i class="bi bi-exclamation-circle"></i> Şifre boşluk içeremez, en az 1 büyük harf, 1 küçük harf, 1 rakam ve 1 özel karakter (@#$%^&+=!.-_) içermelidir
+              </span>
+            }
+          }
+        </div>
+
+        @if (errorMsg()) {
+          <div class="server-error">
+            <i class="bi bi-x-circle-fill"></i> {{ errorMsg() }}
+          </div>
+        }
+
+        <button type="submit" class="btn-primary-custom" [disabled]="loading()">
+          @if (!loading()) {
+            <span>Kayıt Ol</span>
+          } @else {
+            <span><i class="bi bi-arrow-repeat spin"></i> Kayıt yapılıyor...</span>
+          }
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        Zaten hesabın var mı? <a routerLink="/login">Giriş yap</a>
+      </div>
+    </div>
+  </div>
+</div>

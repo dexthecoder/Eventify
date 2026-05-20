@@ -1,0 +1,23 @@
+<div class="event-card" (click)="goToDetail()">
+  <div class="card-image">
+    <img [src]="imageUrl" [alt]="event.title" loading="lazy">
+    <button class="like-btn" (click)="toggleLike($event)" [class.liked]="isLiked">
+      <i class="bi" [class.bi-heart-fill]="isLiked" [class.bi-heart]="!isLiked"></i>
+      <span class="like-count">{{ formatCount(event.likeCount) }}</span>
+    </button>
+    <span class="category-badge">{{ categoryLabel }}</span>
+    <div class="card-overlay">
+      <span class="overlay-text">
+        <i class="bi bi-arrow-right-circle"></i> Detayları Gör
+      </span>
+    </div>
+  </div>
+  <div class="card-body">
+    <h3 class="card-title">{{ event.title }}</h3>
+    <div class="card-meta">
+      <span><i class="bi bi-calendar3"></i> {{ formattedDate }}</span>
+      <span><i class="bi bi-geo-alt"></i> {{ event.location }}</span>
+      <span><i class="bi bi-people"></i> {{ event.participantCount }} katılımcı</span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,168 @@
+<div class="create-page">
+  <div class="create-inner">
+
+    <div class="page-header">
+      <button class="back-btn" routerLink="/events">
+        <i class="bi bi-arrow-left"></i>
+      </button>
+      <div>
+        <h1>Etkinlik Oluştur</h1>
+        <p>Yeni bir etkinlik oluştur ve herkesle paylaş.</p>
+      </div>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="form-grid">
+
+        <div class="form-left">
+
+          <div class="section-card">
+            <h3 class="section-title">Etkinlik Görseli</h3>
+            @if (!imagePreview()) {
+              <label class="image-upload-area" for="imageInput">
+                <i class="bi bi-cloud-upload"></i>
+                <span>Görsel yüklemek için tıkla</span>
+                <span class="upload-hint">JPG, PNG · Maks. 2MB · Zorunlu değil</span>
+              </label>
+            } @else {
+              <div class="image-preview">
+                <img [src]="imagePreview()!" alt="Önizleme">
+                <button type="button" class="remove-image" (click)="removeImage()">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+            }
+            <input id="imageInput" type="file" accept=".jpg,.jpeg,.png"
+              style="display:none" (change)="onFileChange($event)">
+          </div>
+
+          <div class="section-card">
+            <h3 class="section-title">Kategori</h3>
+            <div class="category-grid">
+              @for (cat of categories; track cat.value) {
+                <button type="button" class="cat-option"
+                  [class.active]="f['category'].value === cat.value"
+                  (click)="f['category'].setValue(cat.value)">
+                  {{ cat.label }}
+                </button>
+              }
+            </div>
+            @if (f['category'].invalid && f['category'].touched) {
+              <span class="error-msg">
+                <i class="bi bi-exclamation-circle"></i> Lütfen bir kategori seçin
+              </span>
+            }
+          </div>
+
+        </div>
+
+        <div class="form-right">
+          <div class="section-card">
+            <h3 class="section-title">Etkinlik Bilgileri</h3>
+
+            <div class="field-group">
+              <label>Başlık <span class="required">*</span></label>
+              <input type="text" formControlName="title" class="form-control-custom"
+                [class.is-invalid]="f['title'].invalid && f['title'].touched"
+                placeholder="Etkinlik başlığı girin">
+              @if (f['title'].invalid && f['title'].touched) {
+                @if (f['title'].errors?.['required']) {
+                  <span class="error-msg">
+                    <i class="bi bi-exclamation-circle"></i> Başlık zorunludur
+                  </span>
+                } @else if (f['title'].errors?.['minlength']) {
+                  <span class="error-msg">
+                    <i class="bi bi-exclamation-circle"></i> Başlık en az 3 karakter olmalıdır
+                  </span>
+                } @else if (f['title'].errors?.['maxlength']) {
+                  <span class="error-msg">
+                    <i class="bi bi-exclamation-circle"></i> Başlık en fazla 150 karakter olabilir
+                  </span>
+                }
+              }
+            </div>
+
+            <div class="field-group">
+              <label>Açıklama <span class="required">*</span></label>
+              <textarea formControlName="description" class="form-control-custom textarea"
+                [class.is-invalid]="f['description'].invalid && f['description'].touched"
+                placeholder="Etkinlik hakkında detaylı bilgi verin..." rows="5" maxlength="2000">
+              </textarea>
+              <div class="field-footer">
+                @if (f['description'].invalid && f['description'].touched) {
+                  @if (f['description'].errors?.['required']) {
+                    <span class="error-msg">
+                      <i class="bi bi-exclamation-circle"></i> Açıklama zorunludur
+                    </span>
+                  } @else if (f['description'].errors?.['maxlength']) {
+                    <span class="error-msg">
+                      <i class="bi bi-exclamation-circle"></i> Açıklama en fazla 2000 karakter olabilir
+                    </span>
+                  }
+                } @else {
+                  <span></span>
+                }
+                <span class="char-count">{{ f['description'].value?.length ?? 0 }}/2000</span>
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field-group">
+                <label>Tarih & Saat <span class="required">*</span></label>
+                <input type="datetime-local" formControlName="executionDate"
+                  class="form-control-custom"
+                  [class.is-invalid]="f['executionDate'].invalid && f['executionDate'].touched"
+                  [min]="minDate">
+                @if (f['executionDate'].invalid && f['executionDate'].touched) {
+                  @if (f['executionDate'].errors?.['required']) {
+                    <span class="error-msg">
+                      <i class="bi bi-exclamation-circle"></i> Tarih zorunludur
+                    </span>
+                  } @else {
+                    <span class="error-msg">
+                      <i class="bi bi-exclamation-circle"></i> Etkinlik tarihi gelecekte olmalıdır
+                    </span>
+                  }
+                }
+              </div>
+
+              <div class="field-group">
+                <label>Konum <span class="required">*</span></label>
+                <input type="text" formControlName="location" class="form-control-custom"
+                  [class.is-invalid]="f['location'].invalid && f['location'].touched"
+                  placeholder="Şehir, mekan adı (örn: İstanbul, Harbiye)">
+                @if (f['location'].invalid && f['location'].touched) {
+                  @if (f['location'].errors?.['required']) {
+                    <span class="error-msg">
+                      <i class="bi bi-exclamation-circle"></i> Konum zorunludur
+                    </span>
+                  } @else if (f['location'].errors?.['maxlength']) {
+                    <span class="error-msg">
+                      <i class="bi bi-exclamation-circle"></i> Konum en fazla 250 karakter olabilir
+                    </span>
+                  }
+                }
+              </div>
+            </div>
+
+          </div>
+
+          @if (errorMsg()) {
+            <div class="server-error">
+              <i class="bi bi-x-circle-fill"></i> {{ errorMsg() }}
+            </div>
+          }
+
+          <button type="submit" class="btn-submit" [disabled]="loading()">
+            @if (loading()) {
+              <i class="bi bi-arrow-repeat spin"></i> Oluşturuluyor...
+            } @else {
+              <i class="bi bi-plus-circle"></i> Etkinliği Oluştur
+            }
+          </button>
+
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

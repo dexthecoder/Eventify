@@ -1,0 +1,105 @@
+<div class="event-list-page">
+  <div class="hero">
+    <div class="hero-content">
+      <h1>Beğendiklerim <i class="bi bi-heart-fill accent-icon"></i></h1>
+      <p>Beğendiğin etkinlikleri buradan takip edebilirsin.</p>
+      <div class="search-bar">
+        <i class="bi bi-search"></i>
+        <input
+          type="text"
+          placeholder="Beğenilen etkinliklerde ara..."
+          (input)="onSearch($any($event.target).value)">
+      </div>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <div class="filters-row">
+      <div class="category-filters">
+        @for (cat of categories; track cat.label) {
+          <button
+            class="cat-btn"
+            [class.active]="selectedCategory() === cat.value"
+            (click)="onCategoryChange(cat.value)">
+            {{ cat.label }}
+          </button>
+        }
+      </div>
+
+      <div class="sort-dropdown-wrap">
+        <button class="sort-trigger" (click)="sortDropdownOpen.set(!sortDropdownOpen())">
+          <i class="bi bi-sort-down"></i>
+          <span>{{ activeSortLabel() }}</span>
+          <i class="bi bi-chevron-down chev" [class.rotated]="sortDropdownOpen()"></i>
+        </button>
+        @if (sortDropdownOpen()) {
+          <div class="sort-dropdown">
+            @for (opt of sortOptions; track opt.label) {
+              <button
+                class="sort-option"
+                [class.active]="isActiveSortOption(opt.sortBy, opt.direction)"
+                (click)="onSortChange(opt.sortBy, opt.direction)">
+                @if (isActiveSortOption(opt.sortBy, opt.direction)) {
+                  <i class="bi bi-check2"></i>
+                } @else {
+                  <span class="check-placeholder"></span>
+                }
+                {{ opt.label }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    @if (loading()) {
+      <div class="loading-grid">
+        @for (i of [1,2,3,4,5,6,7,8]; track i) {
+          <div class="skeleton-card">
+            <div class="skeleton-img"></div>
+            <div class="skeleton-body">
+              <div class="skeleton-line"></div>
+              <div class="skeleton-line short"></div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    @if (!loading() && events().length > 0) {
+      <div class="events-grid">
+        @for (event of events(); track event.id) {
+          <app-event-card
+            [event]="event"
+            [likedEventIds]="likedEventIds()"
+            (likeToggled)="onLikeToggled($event)">
+          </app-event-card>
+        }
+      </div>
+    }
+
+    @if (!loading() && events().length === 0) {
+      <div class="empty-state">
+        <i class="bi bi-heart"></i>
+        <h3>Henüz beğenilen etkinlik yok</h3>
+        <p>Etkinlikleri keşfet ve beğendiklerini kaydet.</p>
+      </div>
+    }
+
+    @if (totalPages() > 1) {
+      <div class="pagination">
+        <button class="page-btn" [disabled]="currentPage() === 0" (click)="goToPage(currentPage() - 1)">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+        @for (page of pages; track page) {
+          <button class="page-btn" [class.active]="currentPage() === page" (click)="goToPage(page)">
+            {{ page + 1 }}
+          </button>
+        }
+        <button class="page-btn" [disabled]="currentPage() === totalPages() - 1" (click)="goToPage(currentPage() + 1)">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,250 @@
+<div class="detail-page">
+
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+    </div>
+  }
+
+  @if (!loading() && event()) {
+    <!-- Hero Banner -->
+    <div class="detail-hero" [style.backgroundImage]="'url(' + imageUrl + ')'">
+      <div class="hero-overlay">
+        <div class="hero-inner">
+          <button class="back-btn" (click)="goBack()">
+            <i class="bi bi-arrow-left"></i> Geri
+          </button>
+          <div class="hero-meta">
+            <span class="category-badge">{{ categoryLabel }}</span>
+            <h1>{{ event()!.title }}</h1>
+            <div class="hero-info">
+              <span><i class="bi bi-calendar3"></i> {{ formattedDate }}</span>
+              <span><i class="bi bi-geo-alt"></i> {{ event()!.location }}</span>
+              <span><i class="bi bi-person"></i> {{ event()!.creator.name }} {{ event()!.creator.surname }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-content">
+      <div class="detail-main">
+
+        <!-- Açıklama -->
+        <div class="section-card">
+          <h2 class="section-title">Etkinlik Hakkında</h2>
+          <p class="description">{{ event()!.description }}</p>
+        </div>
+
+        <!-- Yorum Sistemi -->
+        <div class="section-card comments-section">
+          <h2 class="section-title">
+            Yorumlar
+            <span class="comment-count">{{ comments().length }}</span>
+          </h2>
+
+          <!-- Yorum yaz -->
+          <div class="comment-form">
+            <div class="comment-avatar">
+              {{ currentUser?.name?.charAt(0) }}{{ currentUser?.surname?.charAt(0) }}
+            </div>
+            <div class="comment-input-wrap">
+              <textarea
+                [(ngModel)]="newCommentText"
+                placeholder="Yorumunuzu yazın..."
+                rows="2"
+                maxlength="500"
+                class="comment-textarea"
+                (keydown.enter)="$event.preventDefault(); addComment()">
+              </textarea>
+              <div class="comment-actions">
+                <span class="char-count">{{ newCommentText.length }}/500</span>
+                <button class="btn-comment-submit"
+                  [disabled]="!newCommentText.trim() || commentLoading()"
+                  (click)="addComment()">
+                  @if (commentLoading()) {
+                    <i class="bi bi-arrow-repeat spin"></i>
+                  } @else {
+                    <i class="bi bi-send"></i> Gönder
+                  }
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Yorum listesi -->
+          @if (comments().length === 0) {
+            <div class="no-comments">
+              <i class="bi bi-chat-dots"></i>
+              <p>Henüz yorum yapılmamış. İlk yorumu sen yap!</p>
+            </div>
+          }
+
+          <div class="comments-list">
+            @for (comment of comments(); track comment.id) {
+              <div class="comment-item">
+                <div class="comment-avatar">
+                  {{ comment.creator.name.charAt(0) }}{{ comment.creator.surname.charAt(0) }}
+                </div>
+                <div class="comment-body">
+                  <div class="comment-header">
+                    <span class="commenter-name">{{ comment.creator.name }} {{ comment.creator.surname }}</span>
+                    <span class="comment-date">
+                      {{ comment.creationDate | date:'dd MMM yyyy, HH:mm' }}
+                    </span>
+                  </div>
+
+                  @if (editingCommentId() === comment.id) {
+                    <div class="edit-form">
+                      <textarea
+                        [(ngModel)]="editingCommentText"
+                        [ngModel]="editingCommentText()"
+                        (ngModelChange)="editingCommentText.set($event)"
+                        rows="2"
+                        maxlength="500"
+                        class="comment-textarea">
+                      </textarea>
+                      <div class="edit-actions">
+                        <button class="btn-save" (click)="saveEdit(comment.id)">Kaydet</button>
+                        <button class="btn-cancel" (click)="cancelEdit()">İptal</button>
+                      </div>
+                    </div>
+                  } @else {
+                    <p class="comment-text">{{ comment.text }}</p>
+                  }
+
+                  @if (comment.creator.cid === currentUser?.cid || isOwner) {
+                  <div class="comment-controls">
+                    @if (comment.creator.cid === currentUser?.cid) {
+                      <button class="ctrl-btn edit" (click)="startEdit(comment)">
+                        <i class="bi bi-pencil"></i> Düzenle
+                      </button>
+                    }
+                    <button class="ctrl-btn delete" (click)="deleteComment(comment.id)">
+                      <i class="bi bi-trash"></i> Sil
+                    </button>
+                  </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Sağ sidebar -->
+      <div class="detail-sidebar">
+        <div class="action-card">
+          <div class="like-section">
+            <button class="like-big-btn" [class.liked]="isLiked()" (click)="toggleLike()">
+              <i class="bi" [class.bi-heart-fill]="isLiked()" [class.bi-heart]="!isLiked()"></i>
+              <span>{{ isLiked() ? 'Beğenildi' : 'Beğen' }}</span>
+            </button>
+            <span class="like-count">{{ likeCount() }} beğeni</span>
+          </div>
+
+          <div class="divider"></div>
+
+          @if (!isOwner) {
+            <button class="participate-btn"
+              [class.leave]="isParticipating()"
+              (click)="toggleParticipation()">
+              @if (isParticipating()) {
+                <i class="bi bi-x-circle"></i> Ayrıl
+              } @else {
+                <i class="bi bi-check-circle"></i> Katıl
+              }
+            </button>
+          }
+
+          @if (isOwner) {
+            <button class="edit-btn" (click)="goToEdit()">
+              <i class="bi bi-pencil-square"></i> Etkinliği Düzenle
+            </button>
+          }
+        </div>
+        <!-- Katılımcı Listesi (sadece etkinlik sahibine görünür) -->
+        @if (isOwner) {
+          <div class="participants-card">
+            <button class="participants-toggle" (click)="toggleParticipantList()">
+              <span>
+                <i class="bi bi-people"></i>
+                Katılımcılar
+                <span class="participant-count-badge">{{ participantCount() }}</span>
+              </span>
+              <i class="bi bi-chevron-down chev" [class.rotated]="showParticipants()"></i>
+            </button>
+
+            @if (showParticipants()) {
+              <div class="participants-list">
+                @if (participants().length === 0) {
+                  <p class="no-participants">Henüz katılımcı yok.</p>
+                }
+                @for (participant of participants(); track participant.cid) {
+                  <div class="participant-item">
+                    <div class="participant-avatar">
+                      {{ participant.name.charAt(0) }}{{ participant.surname.charAt(0) }}
+                    </div>
+                    <div class="participant-info">
+                      <span class="participant-name">{{ participant.name }} {{ participant.surname }}</span>
+                      <span class="participant-email">{{ participant.email }}</span>
+                    </div>
+                    @if (confirmBanId() === participant.cid) {
+                      <div class="ban-confirm">
+                        <button class="ban-yes" (click)="banUser(participant.cid)">Çıkar</button>
+                        <button class="ban-no" (click)="cancelBan()">İptal</button>
+                      </div>
+                    } @else {
+                      <button class="ban-btn" (click)="confirmBan(participant.cid)">
+                        <i class="bi bi-person-x"></i>
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+
+        <div class="info-card">
+            <div class="info-row">
+                <i class="bi bi-calendar-event"></i>
+                <div>
+                <span class="info-label">Tarih & Saat</span>
+                <span class="info-value">{{ formattedDate }}</span>
+                </div>
+            </div>
+            <div class="info-row">
+                <i class="bi bi-geo-alt"></i>
+                <div>
+                <span class="info-label">Konum</span>
+                <span class="info-value">{{ event()!.location }}</span>
+                </div>
+            </div>
+            <div class="info-row">
+                <i class="bi bi-tag"></i>
+                <div>
+                <span class="info-label">Kategori</span>
+                <span class="info-value">{{ categoryLabel }}</span>
+                </div>
+            </div>
+            <div class="info-row">
+                <i class="bi bi-person-circle"></i>
+                <div>
+                <span class="info-label">Organizatör</span>
+                <span class="info-value">{{ event()!.creator.name }} {{ event()!.creator.surname }}</span>
+                </div>
+            </div>
+            <div class="info-row">
+                <i class="bi bi-people"></i>
+                <div>
+                <span class="info-label">Katılımcı</span>
+                <span class="info-value">{{ participantCount() }} kişi</span>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

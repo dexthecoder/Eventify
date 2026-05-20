@@ -1,0 +1,8 @@
+@use '../event-list/event-list.scss';
+
+.accent-icon {
+  color: var(--danger);
+  font-size: 32px;
+  vertical-align: middle;
+  margin-left: 8px;
+}

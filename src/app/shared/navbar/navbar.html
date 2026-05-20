@@ -1,0 +1,87 @@
+<nav class="navbar" [class.scrolled]="isScrolled()">
+  <div class="navbar-inner">
+
+    <!-- Logo -->
+    <a routerLink="/events" class="navbar-brand">
+      <span class="brand-icon"><i class="bi bi-calendar-event-fill"></i></span>
+      <span class="brand-name">Eventify</span>
+    </a>
+
+    <!-- Orta linkler (desktop) -->
+    <ul class="nav-links">
+      @for (link of navLinks; track link.path) {
+        <li>
+          <a [routerLink]="link.path"
+             routerLinkActive="active"
+             class="nav-link">
+            {{ link.label }}
+          </a>
+        </li>
+      }
+    </ul>
+
+    <!-- Sağ alan -->
+    <div class="navbar-right">
+      <!-- Etkinlik Oluştur -->
+      <a routerLink="/events/create" class="btn-create">
+        <i class="bi bi-plus-lg"></i>
+        <span>Etkinlik Oluştur</span>
+      </a>
+
+      <!-- Profil -->
+      <div class="profile-menu">
+        <button class="profile-btn" (click)="toggleProfile()">
+          <div class="avatar">
+            {{ currentUser()?.name?.charAt(0) }}{{ currentUser()?.surname?.charAt(0) }}
+          </div>
+          <i class="bi bi-chevron-down chevron" [class.rotated]="isProfileOpen()"></i>
+        </button>
+
+        @if (isProfileOpen()) {
+          <div class="profile-dropdown">
+            <div class="profile-info">
+              <div class="profile-avatar-lg">
+                {{ currentUser()?.name?.charAt(0) }}{{ currentUser()?.surname?.charAt(0) }}
+              </div>
+              <div class="profile-details">
+                <span class="profile-name">{{ currentUser()?.name }} {{ currentUser()?.surname }}</span>
+                <span class="profile-email">{{ currentUser()?.email }}</span>
+              </div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <a routerLink="/my-events" class="dropdown-item" (click)="isProfileOpen.set(false)">
+              <i class="bi bi-calendar2-event"></i> Etkinliklerim
+            </a>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item logout-item" (click)="logout()">
+              <i class="bi bi-box-arrow-right"></i> Çıkış Yap
+            </button>
+          </div>
+        }
+      </div>
+
+      <!-- Mobil hamburger -->
+      <button class="hamburger" (click)="toggleMobileMenu()">
+        <i class="bi" [class.bi-list]="!isMobileMenuOpen()" [class.bi-x-lg]="isMobileMenuOpen()"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobil menü -->
+  @if (isMobileMenuOpen()) {
+    <div class="mobile-menu">
+      @for (link of navLinks; track link.path) {
+        <a [routerLink]="link.path"
+           routerLinkActive="active"
+           class="mobile-link"
+           (click)="isMobileMenuOpen.set(false)">
+          {{ link.label }}
+        </a>
+      }
+      <a routerLink="/events/create" class="mobile-link create-link"
+         (click)="isMobileMenuOpen.set(false)">
+        <i class="bi bi-plus-lg"></i> Etkinlik Oluştur
+      </a>
+    </div>
+  }
+</nav>
