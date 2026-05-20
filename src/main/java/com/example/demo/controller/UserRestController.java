@@ -5,6 +5,7 @@ import com.example.demo.dto.UserRegisterRequestDto;
 import com.example.demo.dto.UserResponseDto;
 import com.example.demo.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -36,10 +37,12 @@ public class UserRestController {
 
     @GetMapping("me")
     public ResponseEntity getCurrentUser(HttpServletRequest request) {
-        UserResponseDto sessionUser = (UserResponseDto) request.getSession(false) != null
-                ? (UserResponseDto) request.getSession(false).getAttribute("user")
-                : null;
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return ResponseEntity.status(401).body(Map.of("message", "Oturum bulunamadı."));
+        }
 
+        UserResponseDto sessionUser = (UserResponseDto) session.getAttribute("user");
         if (sessionUser == null) {
             return ResponseEntity.status(401).body(Map.of("message", "Oturum bulunamadı."));
         }
