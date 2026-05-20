@@ -28,8 +28,8 @@ Kullanıcıların etkinlik oluşturabildiği, katılım sağlayabildiği ve yön
 ---
 
 ## 📁 Proje Yapısı
-- **demo1/** → Spring Boot Backend
-- **event-app/** → Angular Frontend
+- **backend/** → Spring Boot Backend
+- **frontend/** → Angular Frontend
 ---
 
 ## ⚙️ Kurulum & Çalıştırma
